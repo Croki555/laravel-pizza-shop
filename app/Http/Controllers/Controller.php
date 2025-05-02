@@ -24,6 +24,14 @@ use Illuminate\Routing\Controller as BaseController;
  *     url=L5_SWAGGER_CONST_HOST,
  *     description="Main API Server"
  * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Используйте Bearer Token для аутентификации. Получите токен через /api/login"
+ * )
  */
 
 class Controller extends BaseController

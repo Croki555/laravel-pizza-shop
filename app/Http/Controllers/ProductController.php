@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\JsonNotFoundException;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -75,20 +76,14 @@ class ProductController extends Controller
      *         )
      *     ),
      * )
-     */
+
+
+     * @throws JsonNotFoundException */
     public function show(string $id)
     {
-        $product = Product::with('category')->find($id);
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Ресурс не найден',
-                'errors' => [
-                    'id' => ['Запрашиваемый ресурс не существует']
-                ]
-            ], 404);
-        }
-
-        return new ProductResource($product);
+        return new ProductResource(
+            Product::with('category')->find($id)
+            ?? throw new JsonNotFoundException()
+        );
     }
 }
