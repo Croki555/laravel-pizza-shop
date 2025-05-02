@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ShowUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,67 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        $users = User::all();
+        return UserResource::collection($users);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/users/{id}",
+     *     summary="Получить пользователя по ID",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="User ID",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User details",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="user",
+     *                 ref="#/components/schemas/User"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="User not found"
+     *             )
+     *         )
+     *     ),
+     *     security={
+     *         {"bearerAuth": {}}
+     *     }
+     * )
+     */
+
+    public function show($id)
+    {
+        $user =  User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Ресурс не найден',
+                'errors' => [
+                    'id' => ['Запрашиваемый ресурс не существует']
+                ]
+            ], 404);
+
+        }
+
+        return new UserResource($user);
     }
 
     /**
@@ -114,67 +175,8 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         return [
-          'User' => User::create($request->validated()),
+            'User' => User::create($request->validated()),
         ];
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/users/{id}",
-     *     summary="Получить пользователя по ID",
-     *     tags={"Users"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="User ID",
-     *         @OA\Schema(
-     *             type="integer",
-     *             format="int64"
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="User details",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="user",
-     *                 ref="#/components/schemas/User"
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="User not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="User not found"
-     *             )
-     *         )
-     *     ),
-     *     security={
-     *         {"bearerAuth": {}}
-     *     }
-     * )
-     */
-
-    public function show($id)
-    {
-        $user =  User::find($id);
-        if (!$user) {
-            return response()->json([
-                'message' => 'Ресурс не найден',
-                'errors' => [
-                    'id' => ['Запрашиваемый ресурс не существует']
-                ]
-            ], 404);
-
-        }
-
-        return ['user' => $user];
     }
 
 //    public function update(Request $request, User $user)
