@@ -34,11 +34,4 @@ class ShowUserRequest extends FormRequest
         ];
     }
 
-    public function prepareForValidation()
-    {
-        $this->merge([
-            'user' => $this->route('user') ?? $this->route('id')
-        ]);
-    }
-
 }
