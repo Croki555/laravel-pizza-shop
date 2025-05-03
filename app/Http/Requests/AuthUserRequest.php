@@ -26,13 +26,4 @@ class AuthUserRequest extends FormRequest
             'password' => ['required', 'string'],
         ];
     }
-
-    public function messages(): array
-    {
-        return [
-            'email.required' => 'Email обязателен для заполнения',
-            'email.email' => 'Введите корректный email',
-            'password.required' => 'Пароль обязателен для заполнения',
-        ];
-    }
 }

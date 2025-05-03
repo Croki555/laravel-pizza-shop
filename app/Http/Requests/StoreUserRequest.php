@@ -31,13 +31,6 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Имя пользователя обязательно для заполнения',
-            'email.required' => 'Email обязателен для заполнения',
-            'email.email' => 'Введите корректный email',
-            'email.unique' => 'Пользователь с таким email уже существует',
-            'password.required' => 'Пароль обязателен для заполнения',
-            'password.min' => 'Пароль должен содержать минимум 8 символов',
-            'password.confirmed' => 'Пароли не совпадают',
             'password.regex' => 'Пароль может содержать только английские буквы и цифры',
         ];
     }
