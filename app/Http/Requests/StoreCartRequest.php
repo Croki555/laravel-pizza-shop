@@ -8,26 +8,37 @@ use App\Rules\StrictInteger;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreGuestCartRequest extends FormRequest
+/**
+ * @OA\Schema(
+ *     schema="StoreCartRequest",
+ *     type="object",
+ *     required={"product_id", "quantity"},
+ *     @OA\Property(
+ *         property="product_id",
+ *         type="integer",
+ *         example=5
+ *     ),
+ *     @OA\Property(
+ *         property="quantity",
+ *         type="integer",
+ *         example=1
+ *     )
+ * )
+ */
+class StoreCartRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
             'product_id' => [
-                'required', new StrictInteger, 'exists:products,id',
+                'required',
+                new StrictInteger,
+                'exists:products,id',
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
                     $currentQuantity = $this->getCurrentQuantity($product->category_id);
@@ -42,19 +53,40 @@ class StoreGuestCartRequest extends FormRequest
                     }
                 }
             ],
-            'guest_token' => ['nullable', 'string', 'min:40', 'max:40', 'exists:guest_carts,guest_token'],
-            'quantity' => ['required', new StrictInteger, 'min:1', 'max:5']
+            'quantity' => [
+                'required',
+                new StrictInteger,
+                'min:1',
+                'max:5',
+                function ($attribute, $value, $fail) {
+                    if (!is_int($value)) {
+                        $fail('Количество должно быть целым числом');
+                    }
+
+                    if ($value <= 0) {
+                        $fail('Количество должно быть положительным числом');
+                    }
+                }
+            ]
         ];
     }
 
     protected function getCurrentQuantity(int $categoryId): int
     {
-        if (!$this->input('guest_token')) {
+        $token = $this->cookie('guest_token');
+        if (!$token) {
             return 0;
         }
 
-        return GuestCart::where('guest_token', $this->input('guest_token'))
+        return GuestCart::where('guest_token', $token)
             ->whereHas('product', fn($q) => $q->where('category_id', $categoryId))
             ->sum('quantity');
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'guest_token' => $this->cookie('guest_token')
+        ]);
     }
 }

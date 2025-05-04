@@ -219,6 +219,226 @@
                 }
             }
         },
+        "/api/cart": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Получить содержимое корзины",
+                "description": "Получить содержимое корзины",
+                "operationId": "0652f94dde92e36bbb3c461356ce1d7b",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CartResponseData"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Корзина не найдена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Корзина не найдена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cart/add": {
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Добавить товар в корзину",
+                "operationId": "8a051e160148a408fe92e1f8da586aab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreCartRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CartSuccessResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cart/remove": {
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Удалить товар из корзины",
+                "description": "Удаляет указанное количество товара",
+                "operationId": "bc7a4202424d594bc284534909b94eb9",
+                "requestBody": {
+                    "description": "Данные для удаления товара",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "description": "ID товара",
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "quantity": {
+                                        "description": "Количество для удаления (по умолчанию удаляет весь товар)",
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Товар успешно удален",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Товар успешно удален из корзины"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CartResponseData"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Корзина не найдена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден в корзине",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Товар не найден в вашей корзине"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "quantity": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Максимальное количество для удаления: 3 (в корзине 3)"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cart/clear": {
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Очистить корзину полностью",
+                "description": "Полная очистка корзины",
+                "operationId": "c2cf94402630acad1cc6d317ec806693",
+                "responses": {
+                    "200": {
+                        "description": "Корзина очищена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Корзина успешно очищена"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -343,6 +563,106 @@
     },
     "components": {
         "schemas": {
+            "CartItemResponse": {
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "example": 7
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Фанта"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 585
+                    }
+                },
+                "type": "object"
+            },
+            "CartResponseData": {
+                "properties": {
+                    "total_items": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "total_price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 6882
+                    },
+                    "cart_items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CartItemResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "CartSuccessResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Товар успешно добавлен в корзину"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/CartResponseData"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreCartRequest": {
+                "required": [
+                    "product_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "CartResource": {
+                "properties": {
+                    "product_id": {
+                        "type": "integer",
+                        "example": 7
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Фанта",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 585,
+                        "nullable": true
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "Напитки",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "UserResource": {
                 "properties": {
                     "id": {
@@ -423,6 +743,47 @@
                         "description": "Название категории",
                         "type": "string",
                         "example": "Пицца"
+                    }
+                },
+                "type": "object"
+            },
+            "GuestCart": {
+                "required": [
+                    "product_id",
+                    "quantity"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "guest_token": {
+                        "description": "Токен не зарегистрированно пользователя хранитя в куках, создается если его нет и используется для последующих запросах",
+                        "type": "string",
+                        "example": "0weE7Iw18Vuwx8Z6rfKUHqtFbFjKCqXUbGLxpHFt"
+                    },
+                    "product_id": {
+                        "description": "ID продукта в корзине",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "product": {
+                        "$ref": "#/components/schemas/Product"
+                    },
+                    "quantity": {
+                        "description": "Количество товара",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "created_at": {
+                        "description": "Дата создания записи",
+                        "type": "string",
+                        "example": "2023-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Дата последнего обновления",
+                        "type": "string",
+                        "example": "2023-01-01T12:00:00Z"
                     }
                 },
                 "type": "object"
@@ -682,6 +1043,10 @@
         {
             "name": "User",
             "description": "Операции с текущим аутентифицированным пользователем"
+        },
+        {
+            "name": "Cart",
+            "description": "Cart"
         }
     ]
 }
