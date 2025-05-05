@@ -2,29 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\GuestCart;
 use App\Models\Product;
 use App\Rules\StrictInteger;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/**
- * @OA\Schema(
- *     schema="StoreCartRequest",
- *     type="object",
- *     required={"product_id", "quantity"},
- *     @OA\Property(
- *         property="product_id",
- *         type="integer",
- *         example=5
- *     ),
- *     @OA\Property(
- *         property="quantity",
- *         type="integer",
- *         example=1
- *     )
- * )
- */
 class StoreCartRequest extends FormRequest
 {
     public function authorize(): bool
@@ -41,6 +23,10 @@ class StoreCartRequest extends FormRequest
                 'exists:products,id',
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
+                    if (!$product) {
+                        return;
+                    }
+
                     $currentQuantity = $this->getCurrentQuantity($product->category_id);
                     $newQuantity = $this->input('quantity', 1);
 
@@ -56,37 +42,25 @@ class StoreCartRequest extends FormRequest
             'quantity' => [
                 'required',
                 new StrictInteger,
-                'min:1',
-                'max:5',
-                function ($attribute, $value, $fail) {
-                    if (!is_int($value)) {
-                        $fail('Количество должно быть целым числом');
-                    }
+                'regex:/^[1-5]$/',
+            ],
+        ];
+    }
 
-                    if ($value <= 0) {
-                        $fail('Количество должно быть положительным числом');
-                    }
-                }
-            ]
+    public function messages(): array
+    {
+        return [
+          'quantity.regex' => 'Только цифра от 1 до 5'
         ];
     }
 
     protected function getCurrentQuantity(int $categoryId): int
     {
-        $token = $this->cookie('guest_token');
-        if (!$token) {
-            return 0;
-        }
-
-        return GuestCart::where('guest_token', $token)
-            ->whereHas('product', fn($q) => $q->where('category_id', $categoryId))
-            ->sum('quantity');
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'guest_token' => $this->cookie('guest_token')
-        ]);
+        return collect(session()->get('cart', []))
+            ->filter(function ($quantity, $productId) use ($categoryId) {
+                $product = Product::find($productId);
+                return $product && $product->category_id == $categoryId;
+            })
+            ->sum();
     }
 }
