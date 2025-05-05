@@ -2,60 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CartResource;
-use App\Models\GuestCart;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Resources\OrderResource;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Services\Cart\CartManager;
+use App\Services\Order\OrderServiceInterface;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        private readonly OrderServiceInterface $orderService
+    ) {}
+
+    public function index(): JsonResponse
     {
-        //
+        $orders = $this->orderService->getUserOrders(Auth::id());
+        return response()->json(OrderResource::collection($orders));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request): JsonResponse
     {
-        $guestToken = request()->cookie('guest_token');
-        $cartItems = GuestCart::when($guestToken, fn($query) => $query->where('guest_token', $guestToken))
-            ->with('product')
-            ->get();
-
-        if ($cartItems->isEmpty()) {
-            return response()->json(['message' => 'Ваша корзина пуста. Добавьте товары перед оформлением заказа.'], 422);
+        try {
+            $this->orderService->createOrder($request->validated());
+            return response()->json(['message' => 'Заказ создан']);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        return CartResource::collection($cartItems);
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

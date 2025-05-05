@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Product;
-use App\Rules\StrictInteger;
+use App\Rules\StrictIntegerValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +19,7 @@ class StoreCartRequest extends FormRequest
         return [
             'product_id' => [
                 'required',
-                new StrictInteger,
+                new StrictIntegerValidation,
                 'exists:products,id',
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
@@ -41,7 +41,7 @@ class StoreCartRequest extends FormRequest
             ],
             'quantity' => [
                 'required',
-                new StrictInteger,
+                new StrictIntegerValidation,
                 'regex:/^[1-5]$/',
             ],
         ];

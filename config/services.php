@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'yandex' => [
+        'geocoder_key' => env('YANDEX_GEOCODER_KEY'),
+    ],
+
 ];

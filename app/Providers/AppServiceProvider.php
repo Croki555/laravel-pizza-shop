@@ -7,8 +7,12 @@ use App\Services\Cart\CartFormatterInterface;
 use App\Services\Cart\CartManager;
 use App\Services\Cart\CartServiceInterface;
 use App\Services\Cart\SessionCartService;
+use App\Services\Order\OrderService;
+use App\Services\Order\OrderServiceInterface;
 use Illuminate\Support\ServiceProvider;
 use L5Swagger;
+use Laravel\Sanctum\Sanctum;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +29,12 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(CartFormatterInterface::class)
             );
         });
+
+        $this->app->singleton(OrderServiceInterface::class, function ($app) {
+            return new OrderService(
+                $app->make(CartManager::class)
+            );
+        });
     }
 
     /**
@@ -32,6 +42,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
     }
 }

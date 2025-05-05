@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Services\Cart\CartManager;
-use App\Rules\StrictInteger;
+use App\Rules\StrictIntegerValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RemoveCartRequest extends FormRequest
@@ -18,7 +18,7 @@ class RemoveCartRequest extends FormRequest
         return [
             'product_id' => [
                 'required',
-                new StrictInteger,
+                new StrictIntegerValidation,
                 function ($attribute, $value, $fail) {
                     $manager = app(CartManager::class);
 
@@ -29,7 +29,7 @@ class RemoveCartRequest extends FormRequest
             ],
             'quantity' => [
                 'required',
-                new StrictInteger,
+                new StrictIntegerValidation,
                 'min:1',
                 'max:5',
                 function ($attribute, $value, $fail) {

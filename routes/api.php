@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', UserController::class);
-    Route::apiResource('order', OrderController::class);
+    Route::apiResource('order', OrderController::class)->only(['index', 'store']);
 });
 
 Route::middleware('no_token')->group(function () {

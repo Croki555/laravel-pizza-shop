@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class StrictInteger implements ValidationRule
+class StrictIntegerValidation implements ValidationRule
 {
     /**
      * Run the validation rule.

@@ -40,9 +40,11 @@ class CartController extends Controller
 
     public function remove(RemoveCartRequest $request): JsonResponse
     {
+        $validated = $request->validated();
+
         $this->cartManager->decreaseQuantity(
-            $request->input('product_id'),
-            $request->input('quantity'));
+            $validated['product_id'],
+            $validated['quantity']);
 
         return response()->json([
             'message' => 'Количество товара уменьшено',
