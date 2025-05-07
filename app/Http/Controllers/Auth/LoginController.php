@@ -22,7 +22,7 @@ class LoginController extends Controller
             ], 401);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = Auth::user();
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([

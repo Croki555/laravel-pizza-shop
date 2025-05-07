@@ -22,7 +22,6 @@ class User extends Authenticatable
         'is_admin'
     ];
 
-
     protected $hidden = [
         'password',
         'is_admin'

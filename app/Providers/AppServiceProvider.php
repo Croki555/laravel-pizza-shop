@@ -2,13 +2,23 @@
 
 namespace App\Providers;
 
+use App\Repositories\Category\CategoryRepository;
+use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Repositories\Order\OrderRepository;
+use App\Repositories\Order\OrderRepositoryInterface;
+use App\Repositories\Product\ProductRepository;
+use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\Cart\CartFormatter;
 use App\Services\Cart\CartFormatterInterface;
 use App\Services\Cart\CartManager;
 use App\Services\Cart\CartServiceInterface;
 use App\Services\Cart\SessionCartService;
+use App\Services\Category\CategoryService;
+use App\Services\Category\CategoryServiceInterface;
 use App\Services\Order\OrderService;
 use App\Services\Order\OrderServiceInterface;
+use App\Services\Product\ProductService;
+use App\Services\Product\ProductServiceInterface;
 use Illuminate\Support\ServiceProvider;
 use L5Swagger;
 use Laravel\Sanctum\Sanctum;
@@ -20,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Cart
         $this->app->bind(CartServiceInterface::class, SessionCartService::class);
         $this->app->bind(CartFormatterInterface::class, CartFormatter::class);
 
@@ -30,11 +41,23 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        // Order
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->singleton(OrderServiceInterface::class, function ($app) {
             return new OrderService(
-                $app->make(CartManager::class)
+                $app->make(CartManager::class),
+                $app->make(OrderRepositoryInterface::class)
             );
         });
+
+        // Product
+        $this->app->bind(ProductServiceInterface::class, ProductService::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+
+        // Category
+        $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
+
     }
 
     /**

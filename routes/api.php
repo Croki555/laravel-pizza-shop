@@ -6,8 +6,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
-use App\Services\Cart\CartManager;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,10 +19,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('user', UserController::class);
-    Route::apiResource('order', OrderController::class)->only(['index', 'store']);
+    Route::apiResource('order', OrderController::class)->only(['index', 'store'])->middleware('regular.user');
 });
 
 Route::middleware('no_token')->group(function () {
@@ -33,12 +30,18 @@ Route::middleware('no_token')->group(function () {
 });
 
 
-Route::prefix('cart')->group(function () {
+Route::middleware('regular.user')->prefix('cart')->group(function () {
     Route::get('/', [CartController::class,'index'])->name('cart.index');
     Route::post('add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
+Route::get('products', [ProductController::class, 'index']);
+Route::get('products/{product}', [ProductController::class, 'show']);
 
-Route::apiResource('products', ProductController::class)->only('index','show');
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::post('products', [ProductController::class, 'store']);
+    Route::put('products/{product}', [ProductController::class, 'update']);
+    //Route::delete('products/{product}', [ProductController::class, 'destroy']);
+});

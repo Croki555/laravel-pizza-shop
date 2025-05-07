@@ -2,26 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\JsonNotFoundException;
+use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Services\Product\ProductServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        private readonly ProductServiceInterface $productService
+    ) {}
 
     public function index(): JsonResponse
     {
-        $products = Product::with('category')->get();
+        $products = $this->productService->getProducts();
         return response()->json(ProductResource::collection($products));
     }
 
-
-    public function show(string $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        return response()->json(new ProductResource(
-            Product::with('category')->find($id)
-            ?? throw new JsonNotFoundException()
-        ));
+        $product = $this->productService->getProductById($id);
+        return response()->json(new ProductResource($product));
     }
+
+    public function store(StoreProductRequest $request): JsonResponse
+    {
+       $product = $this->productService->addProduct($request->validated());
+        return response()->json([
+            'message' => 'Продукт успешно создан',
+            'data' => new ProductResource($product)
+        ]);
+    }
+
 }
