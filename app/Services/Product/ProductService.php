@@ -51,4 +51,15 @@ class ProductService implements ProductServiceInterface
 
         return $product;
     }
+
+    public function deleteProduct(int $id): bool
+    {
+        $deleted = $this->productRepository->deleteProduct($id);
+
+        if (!$deleted) {
+            throw new JsonNotFoundException('Продукт не найден');
+        }
+
+        return true;
+    }
 }

@@ -11,5 +11,6 @@ interface ProductServiceInterface
     public function getProductById(int $id): Product;
     public function addProduct(array $data): Product;
     public function updateProduct(int $id, array $data): Product;
+    public function deleteProduct(int $id): bool;
 
 }

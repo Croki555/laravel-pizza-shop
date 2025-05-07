@@ -11,4 +11,5 @@ interface ProductRepositoryInterface
     public function findByIdWithCategory(int $id): ?Product;
     public function createProduct(array $data): Product;
     public function updateProduct(int $id, array $data): ?Product;
+    public function deleteProduct(int $id): bool;
 }
