@@ -10,6 +10,11 @@ use Throwable;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    public function getAllOrdersWithUser(): Collection
+    {
+        return Order::with(['user', 'status'])->get();
+    }
+
     public function getUserOrdersWithProducts(int $userId): Collection
     {
         return Order::where('user_id', $userId)
@@ -72,5 +77,18 @@ class OrderRepository implements OrderRepositoryInterface
         }, $items);
 
         OrderItem::insert($preparedItems);
+    }
+
+    public function updateOrderStatus(int $orderId, int $statusId): ?Order
+    {
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return null;
+        }
+
+        $order->update(['status_id' => $statusId]);
+
+        return $order->load(['status', 'user']);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
@@ -30,18 +32,22 @@ Route::middleware('no_token')->group(function () {
 });
 
 
-Route::middleware('regular.user')->prefix('cart')->group(function () {
+Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class,'index'])->name('cart.index');
     Route::post('add', [CartController::class, 'add'])->name('cart.add');
     Route::delete('remove', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
-Route::get('products', [ProductController::class, 'index']);
-Route::get('products/{product}', [ProductController::class, 'show']);
+Route::get('products', [ProductController::class, 'index'])->name('products.index');
+Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('products', [ProductController::class, 'store']);
-    Route::put('products/{product}', [ProductController::class, 'update']);
-    Route::delete('products/{product}', [ProductController::class, 'destroy']);
+// ADMIN
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::apiResource('products', AdminProductController::class)->except(['index', 'show']);
+
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index'); // Все заказы
+        Route::patch('{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status'); // Изменение статуса
+    });
 });
