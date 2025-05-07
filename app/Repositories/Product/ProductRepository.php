@@ -27,4 +27,17 @@ class ProductRepository implements ProductRepositoryInterface
             'category_id' => $data['category_id'],
         ]);
     }
+
+    public function updateProduct(int $id, array $data): ?Product
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return null;
+        }
+
+        $product->update($data);
+
+        return $product;
+    }
 }

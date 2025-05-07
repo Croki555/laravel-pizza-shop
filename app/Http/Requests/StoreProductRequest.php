@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Category;
+use App\Rules\CategoryExistsValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
@@ -29,22 +30,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => [
                 'prohibits:category',
                 'required_without:category',
-                'integer',
-                function ($attribute, $value, $fail) {
-                    $category = Category::find($value);
-
-                    if (!$category) {
-                        $availableCategories = Category::all(['id', 'name'])
-                            ->mapWithKeys(fn ($item) => [$item->id => $item->name])
-                            ->toArray();
-
-                        $formattedCategories = collect($availableCategories)
-                            ->map(fn ($name, $id) => "#$id - $name")
-                            ->implode(', ');
-
-                        $fail("Категория с ID $value не найдена. Доступные категории: $formattedCategories");
-                    }
-                }
+                new CategoryExistsValidation()
             ],
             'category' => [
                 'prohibits:category_id',

@@ -40,4 +40,15 @@ class ProductService implements ProductServiceInterface
 
         return $this->productRepository->createProduct($data);
     }
+
+    public function updateProduct(int $id, array $data): Product
+    {
+        $product = $this->productRepository->updateProduct($id, $data);
+
+        if (!$product) {
+            throw new JsonNotFoundException('Продукт не найден');
+        }
+
+        return $product;
+    }
 }

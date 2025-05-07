@@ -10,4 +10,6 @@ interface ProductServiceInterface
     public function getProducts(): Collection;
     public function getProductById(int $id): Product;
     public function addProduct(array $data): Product;
+    public function updateProduct(int $id, array $data): Product;
+
 }

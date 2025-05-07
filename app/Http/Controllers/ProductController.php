@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\Product\ProductServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -32,6 +33,13 @@ class ProductController extends Controller
             'message' => 'Продукт успешно создан',
             'data' => new ProductResource($product)
         ]);
+    }
+
+    public function update(UpdateProductRequest $request, int $id): JsonResponse
+    {
+        $product = $this->productService->updateProduct($id, $request->validated());
+
+        return response()->json(new ProductResource($product));
     }
 
 }
