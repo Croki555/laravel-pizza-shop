@@ -47,7 +47,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::apiResource('products', AdminProductController::class)->except(['index', 'show']);
 
     Route::prefix('orders')->group(function () {
-        Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index'); // Все заказы
-        Route::patch('{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status'); // Изменение статуса
+        Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+        Route::patch('{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
     });
 });

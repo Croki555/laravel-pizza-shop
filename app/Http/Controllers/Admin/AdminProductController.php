@@ -24,7 +24,7 @@ class AdminProductController extends Controller
         return response()->json([
             'message' => 'Продукт успешно создан',
             'data' => new ProductResource($product)
-        ]);
+        ], Response::HTTP_CREATED);
     }
 
     public function update(UpdateProductRequest $request, int $id): JsonResponse

@@ -28,7 +28,7 @@ class StoreCartRequest extends FormRequest
                     }
 
                     $currentQuantity = $this->getCurrentQuantity($product->category_id);
-                    $newQuantity = $this->input('quantity', 1);
+                    $newQuantity = $this->input('quantity');
 
                     if ($product->category_id == 1 && ($currentQuantity + $newQuantity) > 10) {
                         $fail('Максимум 10 пицц. Текущее количество: ' . $currentQuantity);
@@ -42,15 +42,7 @@ class StoreCartRequest extends FormRequest
             'quantity' => [
                 'required',
                 new StrictIntegerValidation,
-                'regex:/^[1-5]$/',
             ],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-          'quantity.regex' => 'Только цифра от 1 до 5'
         ];
     }
 

@@ -20,12 +20,14 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function createProduct(array $data): Product
     {
-        return Product::create([
+        $product = Product::create([
             'name' => $data['name'],
             'description' => $data['description'],
             'price' => $data['price'],
             'category_id' => $data['category_id'],
         ]);
+
+        return $product->load('category');
     }
 
     public function updateProduct(int $id, array $data): ?Product
@@ -38,7 +40,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         $product->update($data);
 
-        return $product;
+        return $product->load('category');
     }
 
     public function deleteProduct(int $id): bool

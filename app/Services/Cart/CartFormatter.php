@@ -12,7 +12,7 @@ class CartFormatter implements CartFormatterInterface
         $totalPrice = 0;
         $totalItems = 0;
 
-        if (!empty($cart)) {
+        if ($cart !== []) {
             $products = Product::with('category')->find(array_keys($cart));
 
             $formattedItems = $products->map(function ($product) use ($cart) {
