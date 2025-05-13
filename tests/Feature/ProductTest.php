@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -370,7 +371,7 @@ class ProductTest extends TestCase
             'description' => 'клюквенное описание'
         ];
 
-        // Отправляем запрос на обновление
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->putJson("/api/admin/products/{$product->id}", $updateData);
@@ -431,7 +432,7 @@ class ProductTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->deleteJson("/api/admin/products/{$product->id}");
 
-        // Проверяем ответ
+
         $response->assertStatus(204)
             ->assertNoContent();
 

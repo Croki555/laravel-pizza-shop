@@ -76,12 +76,16 @@ class AuthTest extends TestCase
     /** @test */
     public function authenticated_user_cannot_register()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'email' => 'existing@example.com',
+            'password' => bcrypt('password')
+        ]);
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        $response = $this->withHeaders(([
+        $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ]))->postJson(route('register'), [
+        ])->postJson(route('register'), [
             'name' => 'New User',
             'email' => 'new@example.com',
             'password' => 'password',
@@ -89,10 +93,10 @@ class AuthTest extends TestCase
         ]);
 
 
-        $response->assertStatus(403);
-        $response->assertJson([
-            'message' => 'Действие запрещено для аутентифицированных пользователей'
-        ]);
+        $response->assertStatus(403)
+            ->assertJsonFragment([
+                'message' => 'Действие запрещено для аутентифицированных пользователей'
+            ]);
     }
 
 

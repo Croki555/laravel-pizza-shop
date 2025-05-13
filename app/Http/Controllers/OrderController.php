@@ -17,14 +17,17 @@ class OrderController extends Controller
     public function index(): JsonResponse
     {
         $orders = $this->orderService->getUserOrders(Auth::id());
-        return response()->json(OrderResource::collection($orders));
+        return response()->json([
+            'message'=> 'Ваши заказы',
+            'data' => OrderResource::collection($orders)
+        ]);
     }
 
     public function store(StoreOrderRequest $request): JsonResponse
     {
         try {
             $this->orderService->createOrder($request->validated());
-            return response()->json(['message' => 'Заказ создан']);
+            return response()->json(['message' => 'Заказ создан'], 201);
         } catch (\DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }

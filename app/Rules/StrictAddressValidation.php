@@ -5,6 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class StrictAddressValidation implements ValidationRule
 {
@@ -15,6 +16,7 @@ class StrictAddressValidation implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+
         $apiKey = config('services.yandex.geocoder_key');
         $response = Http::get('https://geocode-maps.yandex.ru/v1/', [
             'apikey' => $apiKey,
@@ -22,6 +24,10 @@ class StrictAddressValidation implements ValidationRule
             'lang' => 'ru-RU',
             'format' => 'json',
         ]);
+
+//        Log::info('Проверка адреса: ' . $value);
+//        Log::info('API Key: ' . config('services.yandex.geocoder_key'));
+//        Log::info('Ответ от Яндекс.Геокодера: ', $response->json());
 
         $data = $response->json();
 
