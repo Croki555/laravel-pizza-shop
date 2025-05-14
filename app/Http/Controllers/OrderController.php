@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrderRequest;
@@ -16,7 +18,7 @@ class OrderController extends Controller
 
     public function index(): JsonResponse
     {
-        $orders = $this->orderService->getUserOrders(Auth::id());
+        $orders = $this->orderService->getUserOrders((int) Auth::id());
         return response()->json([
             'message'=> 'Ваши заказы',
             'data' => OrderResource::collection($orders)

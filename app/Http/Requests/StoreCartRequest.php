@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Models\Product;
 use App\Rules\StrictIntegerValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class StoreCartRequest extends FormRequest
 {
@@ -14,6 +18,9 @@ class StoreCartRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -46,12 +53,16 @@ class StoreCartRequest extends FormRequest
         ];
     }
 
+
     protected function getCurrentQuantity(int $categoryId): int
     {
-        return collect(session()->get('cart', []))
-            ->filter(function ($quantity, $productId) use ($categoryId) {
+        /** @var array<int|string, int> $sessionCart */
+        $sessionCart = session()->get('cart', []);
+
+        return collect($sessionCart)
+            ->filter(function (int $quantity, int|string $productId) use ($categoryId): bool {
                 $product = Product::find($productId);
-                return $product && $product->category_id == $categoryId;
+                return $product && $product->category_id === $categoryId;
             })
             ->sum();
     }

@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Cart;
 
 use App\Models\Product;
+use Illuminate\Support\Collection;
 
 class CartFormatter implements CartFormatterInterface
 {
+    /**
+     * @param array<string, int> $cart
+     * @return array<string, mixed>
+     */
     public function getFormattedCart(array $cart): array
     {
         $formattedItems = collect();
@@ -16,7 +23,7 @@ class CartFormatter implements CartFormatterInterface
             $products = Product::with('category')->find(array_keys($cart));
 
             $formattedItems = $products->map(function ($product) use ($cart) {
-                $quantity = $cart[$product->id];
+                $quantity = $cart[(string)$product->id];
                 return [
                     'product_id' => $product->id,
                     'quantity' => $quantity,
@@ -28,7 +35,7 @@ class CartFormatter implements CartFormatterInterface
 
             $totalItems = array_sum($cart);
             $totalPrice = $products->sum(function ($product) use ($cart) {
-                return $product->price * $cart[$product->id];
+                return $product->price * $cart[(string)$product->id];
             });
         }
 

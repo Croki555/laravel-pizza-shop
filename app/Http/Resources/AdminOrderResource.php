@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -8,9 +10,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class AdminOrderResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
+     * @return array{
+     *     status: string|null,
+     *     delivery_address: string|null,
+     *     delivery_time: string|null,
+     *     user: UserResource|null
+     * }
      */
     public function toArray(Request $request): array
     {

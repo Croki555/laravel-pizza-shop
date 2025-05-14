@@ -1,0 +1,35 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+
+    # Пути для анализа
+    paths:
+        - app/
+        - config/
+        - routes/
+
+    # Игнорируемые пути
+    excludePaths:
+        - ./vendor/
+        - ./storage/
+        - ./database/
+        - ./bootstrap/cache/
+        - config/cache.php
+        - config/database.php
+        - config/session.php
+        #- ./tests/
+
+    # Игнорирование типичных "ложных" ошибок Laravel
+    ignoreErrors:
+        #- '#Call to an undefined method .*::.*\(\)#'  # Магия фасадов
+        #- '#Property .* has no typehint#'             # Свойства Eloquent
+        - '#Access to an undefined property .*#'      # Динамические свойства
+        #- identifier: missingType.iterableValue
+
+    # Настройки для Laravel-специфики
+    universalObjectCratesClasses:
+        - Illuminate\Support\Facades\Auth
+        - Illuminate\Support\Facades\Route
+        - Illuminate\Support\Facades\DB

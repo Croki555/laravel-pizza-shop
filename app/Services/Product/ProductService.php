@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Product;
 
 use App\Exceptions\JsonNotFoundException;
@@ -16,11 +18,20 @@ class ProductService implements ProductServiceInterface
         private readonly CategoryServiceInterface $categoryService,
     ){}
 
+
+    /**
+     * @return Collection<int, Product>
+     */
     public function getProducts(): Collection
     {
         return $this->productRepository->getAllWithCategories();
     }
 
+    /**
+     * @param int $id
+     * @return Product
+     * @throws JsonNotFoundException
+     */
     public function getProductById(int $id): Product
     {
         $product = $this->productRepository->findByIdWithCategory($id);
@@ -32,6 +43,10 @@ class ProductService implements ProductServiceInterface
         return $product;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return Product
+     */
     public function addProduct(array $data): Product
     {
         if (isset($data['category'])) {
@@ -41,6 +56,12 @@ class ProductService implements ProductServiceInterface
         return $this->productRepository->createProduct($data);
     }
 
+    /**
+     * @param int $id
+     * @param array<string, mixed> $data
+     * @return Product
+     * @throws JsonNotFoundException
+     */
     public function updateProduct(int $id, array $data): Product
     {
         $product = $this->productRepository->updateProduct($id, $data);
@@ -52,14 +73,12 @@ class ProductService implements ProductServiceInterface
         return $product;
     }
 
+    /**
+     * @param int $id
+     * @return bool
+     */
     public function deleteProduct(int $id): bool
     {
-        $deleted = $this->productRepository->deleteProduct($id);
-
-        if (!$deleted) {
-            throw new JsonNotFoundException('Продукт не найден');
-        }
-
-        return true;
+        return $this->productRepository->deleteProduct($id);
     }
 }

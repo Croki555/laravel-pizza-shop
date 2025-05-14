@@ -7,9 +7,9 @@ use Illuminate\Http\JsonResponse;
 
 class JsonNotFoundException extends Exception
 {
-    public function __construct($message = null)
+    public function __construct(string $message = 'Ресурс не найден')
     {
-        parent::__construct($message ?? 'Ресурс не найден');
+        parent::__construct($message);
     }
 
     public function render(): JsonResponse

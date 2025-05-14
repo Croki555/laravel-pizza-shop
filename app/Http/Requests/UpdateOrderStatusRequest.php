@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
+use App\Models\User;
 use App\Rules\StatusExistsValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,13 +15,13 @@ class UpdateOrderStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->is_admin;
+        /** @var User $user */
+        $user = auth()->user();
+        return $user->is_admin;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {

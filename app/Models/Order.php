@@ -29,21 +29,33 @@ class Order extends Model
         'delivery_time' => 'datetime:Y-m-d H:i:s'
     ];
 
+    /**
+     * @return BelongsTo<Status, Order>
+     */
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
     }
 
+    /**
+     * @return BelongsTo<User, Order>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<OrderItem>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
+    /**
+     * @return HasMany<OrderItem>
+     */
     public function itemsWithProducts(): HasMany
     {
         return $this->hasMany(OrderItem::class)->with('product');

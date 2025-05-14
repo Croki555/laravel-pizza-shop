@@ -10,15 +10,22 @@ class ClearSessions extends Command
     protected $signature = 'session:clear';
     protected $description = 'Clear all session files';
 
-    public function handle()
+    public function handle(): void
     {
         $path = storage_path('framework/sessions');
 
         if (!file_exists($path)) {
-            return $this->error('Session directory not found!');
+            $this->error('Session directory not found!');
+            return;
         }
 
-        foreach (glob("$path/*") as $file) {
+        $files = glob("$path/*");
+        if ($files === false) {
+            $this->error('Failed to read session files');
+            return;
+        }
+
+        foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
             }

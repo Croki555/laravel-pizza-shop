@@ -20,6 +20,9 @@ class Product extends Model
         'category_id',
     ];
 
+    /**
+     * @return BelongsTo<Category, Product>
+     */
     public function category():BelongsTo
     {
         return $this->belongsTo(Category::class);

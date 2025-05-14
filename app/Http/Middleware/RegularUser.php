@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +18,10 @@ class RegularUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user()->is_admin) {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->is_admin) {
             return response()->json(['message' => 'Запрещено: только для обычных пользователей'], 403);
         }
 

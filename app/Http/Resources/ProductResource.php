@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -8,9 +10,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class ProductResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
+     * @return array{
+     *     name: string|null,
+     *     description: string|null,
+     *     price: float|null,
+     *     category: string|null,
+     * }
      */
     public function toArray(Request $request): array
     {

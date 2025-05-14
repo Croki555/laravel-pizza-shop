@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Rules\StrictAddressValidation;
 use App\Rules\StrictDeliveryTimeValidation;
-use App\Rules\ValidateYandexAddress;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOrderRequest extends FormRequest
@@ -15,9 +16,7 @@ class StoreOrderRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -36,7 +35,10 @@ class StoreOrderRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
     {
         return [
             'phone.regex' => 'Номер телефона должен быть в формате: +7 (XXX) XXX-XX-XX или 8 XXX XXX-XX-XX',

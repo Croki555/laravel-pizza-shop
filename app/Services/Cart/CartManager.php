@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Cart;
 
 class CartManager
@@ -29,11 +31,18 @@ class CartManager
         $this->service->clear();
     }
 
+
+    /**
+     * @return array<string, int>
+     */
     public function getRawCart(): array
     {
         return $this->service->getCart();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getFormattedCart(): array
     {
         return $this->formatter->getFormattedCart($this->service->getCart());
@@ -42,7 +51,7 @@ class CartManager
     public function getItemQuantity(int $productId): int
     {
         $cart = $this->service->getCart();
-        return $cart[$productId] ?? 0;
+        return $cart[(string)$productId] ?? 0;
     }
 
     public function isEmpty(): bool

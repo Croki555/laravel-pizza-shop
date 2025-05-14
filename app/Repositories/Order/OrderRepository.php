@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repositories\Order;
 
 use App\Models\Order;
@@ -10,11 +13,19 @@ use Throwable;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    /**
+     * @return Collection<int, Order>
+     */
     public function getAllOrdersWithUser(): Collection
     {
         return Order::with(['user', 'status'])->get();
     }
 
+
+    /**
+     * @param int $userId
+     * @return Collection<int, Order>
+     */
     public function getUserOrdersWithProducts(int $userId): Collection
     {
         return Order::where('user_id', $userId)
@@ -22,6 +33,13 @@ class OrderRepository implements OrderRepositoryInterface
             ->get();
     }
 
+
+    /**
+     * @param array<string, mixed> $orderData
+     * @param array<int, mixed> $items
+     * @return Order
+     * @throws \Exception
+     */
     public function createOrderWithItems(array $orderData, array $items): Order
     {
         DB::beginTransaction();
@@ -53,6 +71,10 @@ class OrderRepository implements OrderRepositoryInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return Order
+     */
     public function createOrderRecord(array $data): Order
     {
         return Order::create([
@@ -64,6 +86,11 @@ class OrderRepository implements OrderRepositoryInterface
         ]);
     }
 
+    /**
+     * @param int $orderId
+     * @param array<int, array{product_id: int|string, quantity: int|string}> $items
+     * @return void
+     */
     public function createOrderItems(int $orderId, array $items): void
     {
         $preparedItems = array_map(function ($item) use ($orderId) {
@@ -79,6 +106,11 @@ class OrderRepository implements OrderRepositoryInterface
         OrderItem::insert($preparedItems);
     }
 
+    /**
+     * @param int $orderId
+     * @param int $statusId
+     * @return Order|null
+     */
     public function updateOrderStatus(int $orderId, int $statusId): ?Order
     {
         $order = Order::find($orderId);

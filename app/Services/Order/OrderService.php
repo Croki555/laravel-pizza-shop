@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Services\Order;
 
 use App\Exceptions\JsonNotFoundException;
@@ -14,16 +17,28 @@ class OrderService implements OrderServiceInterface
         private readonly OrderRepositoryInterface $orderRepository
     ) {}
 
+    /**
+     * @param int $userId
+     * @return Collection<int, Order>
+     */
     public function getUserOrders(int $userId): Collection
     {
         return $this->orderRepository->getUserOrdersWithProducts($userId);
     }
 
+    /**
+     * @return Collection<int, Order>
+     */
     public function getAllOrdersWithUser(): Collection
     {
         return $this->orderRepository->getAllOrdersWithUser();
     }
 
+    /**
+     * @param array<string, mixed> $orderData
+     * @return Order
+     * @throws \DomainException
+     */
     public function createOrder(array $orderData): Order
     {
         if ($this->cartManager->isEmpty()) {
@@ -39,6 +54,10 @@ class OrderService implements OrderServiceInterface
         return $order;
     }
 
+    /**
+     * @param array<string, int> $cartItems
+     * @return array<int, mixed>
+     */
     private function prepareCartItems(array $cartItems): array
     {
         $items = [];
@@ -53,6 +72,12 @@ class OrderService implements OrderServiceInterface
         return $items;
     }
 
+    /**
+     * @param int $orderId
+     * @param int $statusId
+     * @return Order
+     * @throws JsonNotFoundException
+     */
     public function updateOrderStatus(int $orderId, int $statusId): Order
     {
         $order = $this->orderRepository->updateOrderStatus($orderId, $statusId);
