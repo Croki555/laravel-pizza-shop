@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Cart;
 
 use App\Models\Product;
-use Illuminate\Support\Collection;
 
 class CartFormatter implements CartFormatterInterface
 {
@@ -42,7 +41,7 @@ class CartFormatter implements CartFormatterInterface
         return [
             'total_items' => $totalItems,
             'total_price' => $totalPrice,
-            'cart_items' => $formattedItems
+            'cart_items' => $formattedItems,
         ];
     }
 }

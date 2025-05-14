@@ -19,7 +19,7 @@ class EnsureNoToken
     {
         if ($request->bearerToken()) {
             return response()->json([
-                'message' => 'Действие запрещено для аутентифицированных пользователей'
+                'message' => 'Действие запрещено для аутентифицированных пользователей',
             ], 403);
         }
 

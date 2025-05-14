@@ -6,7 +6,6 @@ namespace App\Services\Product;
 
 use App\Exceptions\JsonNotFoundException;
 use App\Models\Product;
-use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\Category\CategoryServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +15,8 @@ class ProductService implements ProductServiceInterface
     public function __construct(
         private readonly ProductRepositoryInterface $productRepository,
         private readonly CategoryServiceInterface $categoryService,
-    ){}
+    ) {
+    }
 
 
     /**

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -18,7 +19,7 @@ class AuthTest extends TestCase
             'name' => 'Иван Иванов',
             'email' => 'ivan2@example.com',
             'password' => 'password123',
-            'password_confirmation' => 'password123'
+            'password_confirmation' => 'password123',
         ]);
 
         $response->assertStatus(201)
@@ -78,7 +79,7 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'existing@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -89,13 +90,13 @@ class AuthTest extends TestCase
             'name' => 'New User',
             'email' => 'new@example.com',
             'password' => 'password',
-            'password_confirmation' => 'password'
+            'password_confirmation' => 'password',
         ]);
 
 
         $response->assertStatus(403)
             ->assertJsonFragment([
-                'message' => 'Действие запрещено для аутентифицированных пользователей'
+                'message' => 'Действие запрещено для аутентифицированных пользователей',
             ]);
     }
 
@@ -105,7 +106,7 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'existing@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -113,12 +114,12 @@ class AuthTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->postJson(route('login'), [
             'email' => 'existing@example.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(403);
         $response->assertJson([
-            'message' => 'Действие запрещено для аутентифицированных пользователей'
+            'message' => 'Действие запрещено для аутентифицированных пользователей',
         ]);
     }
 }

@@ -10,14 +10,14 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\Product\ProductServiceInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminProductController extends Controller
 {
     public function __construct(
         private readonly ProductServiceInterface $productService
-    ) {}
+    ) {
+    }
 
     public function store(StoreProductRequest $request): JsonResponse
     {
@@ -25,7 +25,7 @@ class AdminProductController extends Controller
 
         return response()->json([
             'message' => 'Продукт успешно создан',
-            'data' => new ProductResource($product)
+            'data' => new ProductResource($product),
         ], Response::HTTP_CREATED);
     }
 
@@ -35,7 +35,7 @@ class AdminProductController extends Controller
 
         return response()->json([
             'message' => 'Продукт успешно изменен',
-            'data' => new ProductResource($product)
+            'data' => new ProductResource($product),
         ]);
     }
 

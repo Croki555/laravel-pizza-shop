@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +16,10 @@ class StatusSeeder extends Seeder
     {
         DB::table('statuses')->insertOrIgnore([
             [
-                'name' => 'В работе'
+                'name' => 'В работе',
             ],
             [
-                'name' => 'Доставляется'
+                'name' => 'Доставляется',
             ],
         ]);
     }

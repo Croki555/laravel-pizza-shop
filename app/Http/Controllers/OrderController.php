@@ -14,14 +14,15 @@ class OrderController extends Controller
 {
     public function __construct(
         private readonly OrderServiceInterface $orderService
-    ) {}
+    ) {
+    }
 
     public function index(): JsonResponse
     {
         $orders = $this->orderService->getUserOrders((int) Auth::id());
         return response()->json([
-            'message'=> 'Ваши заказы',
-            'data' => OrderResource::collection($orders)
+            'message' => 'Ваши заказы',
+            'data' => OrderResource::collection($orders),
         ]);
     }
 

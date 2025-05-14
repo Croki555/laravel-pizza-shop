@@ -15,7 +15,8 @@ class OrderService implements OrderServiceInterface
     public function __construct(
         private readonly CartManager $cartManager,
         private readonly OrderRepositoryInterface $orderRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @param int $userId
@@ -65,7 +66,7 @@ class OrderService implements OrderServiceInterface
         foreach ($cartItems as $productId => $quantity) {
             $items[] = [
                 'product_id' => $productId,
-                'quantity' => $quantity
+                'quantity' => $quantity,
             ];
         }
 
@@ -82,7 +83,7 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderRepository->updateOrderStatus($orderId, $statusId);
 
-        if(!$order) {
+        if (!$order) {
             throw new JsonNotFoundException('Заказ не найден');
         }
 

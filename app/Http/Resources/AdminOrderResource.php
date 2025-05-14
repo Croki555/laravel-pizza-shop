@@ -23,7 +23,7 @@ class AdminOrderResource extends JsonResource
             'status' => $this->whenLoaded('status', fn () => $this->status->name),
             'delivery_address' => $this->delivery_address,
             'delivery_time' => $this->delivery_time->format('Y-m-d H:i'),
-            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user))
+            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
         ];
     }
 }

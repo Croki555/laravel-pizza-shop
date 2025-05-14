@@ -7,9 +7,6 @@ namespace App\Http\Requests;
 use App\Models\Product;
 use App\Rules\StrictIntegerValidation;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class StoreCartRequest extends FormRequest
 {
@@ -26,7 +23,7 @@ class StoreCartRequest extends FormRequest
         return [
             'product_id' => [
                 'required',
-                new StrictIntegerValidation,
+                new StrictIntegerValidation(),
                 'exists:products,id',
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
@@ -44,11 +41,11 @@ class StoreCartRequest extends FormRequest
                     if ($product->category_id == 2 && ($currentQuantity + $newQuantity) > 20) {
                         $fail('Максимум 20 напитков. Текущее количество: ' . $currentQuantity);
                     }
-                }
+                },
             ],
             'quantity' => [
                 'required',
-                new StrictIntegerValidation,
+                new StrictIntegerValidation(),
             ],
         ];
     }

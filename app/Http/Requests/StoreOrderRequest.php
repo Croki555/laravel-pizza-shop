@@ -23,7 +23,7 @@ class StoreOrderRequest extends FormRequest
         return [
             'phone' => [
                 'required',
-                'regex:/^(\+7|8)[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/'
+                'regex:/^(\+7|8)[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/',
             ],
             'email' => ['required', 'email'],
             'delivery_address' => ['required', 'string', new StrictAddressValidation()],
@@ -31,7 +31,7 @@ class StoreOrderRequest extends FormRequest
                 'required',
                 'date_format:Y-m-d H:i:s',
                 new StrictDeliveryTimeValidation(),
-            ]
+            ],
         ];
     }
 

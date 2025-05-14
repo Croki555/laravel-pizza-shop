@@ -27,9 +27,9 @@ class StrictAddressValidation implements ValidationRule
             'format' => 'json',
         ]);
 
-//        Log::info('Проверка адреса: ' . $value);
-//        Log::info('API Key: ' . config('services.yandex.geocoder_key'));
-//        Log::info('Ответ от Яндекс.Геокодера: ', $response->json());
+        //        Log::info('Проверка адреса: ' . $value);
+        //        Log::info('API Key: ' . config('services.yandex.geocoder_key'));
+        //        Log::info('Ответ от Яндекс.Геокодера: ', $response->json());
 
         $data = $response->json();
 

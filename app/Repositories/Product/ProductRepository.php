@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repositories\Product;
 
-use App\Exceptions\JsonNotFoundException;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 

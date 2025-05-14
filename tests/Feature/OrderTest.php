@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
@@ -9,9 +11,6 @@ use App\Models\Product;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class OrderTest extends TestCase
@@ -30,7 +29,7 @@ class OrderTest extends TestCase
     public function auth_user_can_create_order(): void
     {
         Status::factory()->create([
-            'name'=> 'В работе'
+            'name' => 'В работе',
         ]);
 
         User::factory()->create([
@@ -48,12 +47,12 @@ class OrderTest extends TestCase
             'name' => 'Пепперони',
             'description' => 'Классическая пицца с пепперони',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
 
         $this->postJson(route('cart.add'), [
             'product_id' => $pizza->id,
-            'quantity' => 4
+            'quantity' => 4,
         ])->assertStatus(200);
 
 
@@ -63,7 +62,7 @@ class OrderTest extends TestCase
             'email' => 'test3@mail.ru',
             'phone' => '+7 (888) 456-78-91',
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
-            'delivery_time' => '2025-05-05 21:00:00'
+            'delivery_time' => '2025-05-05 21:00:00',
         ]);
 
         $response->assertStatus(201)->assertJsonStructure(['message'])
@@ -76,7 +75,7 @@ class OrderTest extends TestCase
     public function auth_user_can_see_their_orders(): void
     {
         Status::factory()->create([
-            'name'=> 'В работе'
+            'name' => 'В работе',
         ]);
 
         User::factory()->create([
@@ -94,12 +93,12 @@ class OrderTest extends TestCase
             'name' => 'Пепперони',
             'description' => 'Классическая пицца с пепперони',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
 
         $this->postJson(route('cart.add'), [
             'product_id' => $pizza->id,
-            'quantity' => 4
+            'quantity' => 4,
         ])->assertStatus(200);
 
         $order = $this->withHeaders([
@@ -108,7 +107,7 @@ class OrderTest extends TestCase
             'email' => 'test3@mail.ru',
             'phone' => '+7 (888) 456-78-91',
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
-            'delivery_time' => '2025-05-05 21:00:00'
+            'delivery_time' => '2025-05-05 21:00:00',
         ]);
 
         $response = $this->withHeaders([
@@ -127,11 +126,11 @@ class OrderTest extends TestCase
                         '*' => [
                             'name',
                             'price',
-                            'quantity'
-                        ]
-                    ]
-                ]
-            ]
+                            'quantity',
+                        ],
+                    ],
+                ],
+            ],
         ])->assertJson(['message' => 'Ваши заказы']);
     }
 
@@ -157,7 +156,7 @@ class OrderTest extends TestCase
             'email' => 'test3@mail.ru',
             'phone' => '+7 (888) 456-78-91',
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
-            'delivery_time' => '2025-05-05 21:00:00'
+            'delivery_time' => '2025-05-05 21:00:00',
         ]);
 
         $response->assertStatus(422)->assertJsonStructure(['message'])
@@ -184,12 +183,12 @@ class OrderTest extends TestCase
             'name' => 'Пепперони',
             'description' => 'Классическая пицца с пепперони',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
 
         $this->postJson(route('cart.add'), [
             'product_id' => $pizza->id,
-            'quantity' => 4
+            'quantity' => 4,
         ])->assertStatus(200);
 
 
@@ -199,7 +198,7 @@ class OrderTest extends TestCase
             'email' => 'test3####mail.ru',
             'phone' => '()999 456-78-91',
             'delivery_address' => 'Какой-то адрес',
-            'delivery_time' => '2024-05-05 21:00:00'
+            'delivery_time' => '2024-05-05 21:00:00',
         ]);
 
         $response->assertStatus(422)->assertJsonStructure([
@@ -208,8 +207,8 @@ class OrderTest extends TestCase
                 'email',
                 'phone',
                 'delivery_address',
-                'delivery_time'
-            ]
+                'delivery_time',
+            ],
         ]);
     }
 
@@ -221,8 +220,8 @@ class OrderTest extends TestCase
         User::factory()->admin()
             ->create([
                 'name' => 'Admin',
-                'email'=> 'admin@mail.ru',
-                'password' => 'admin'
+                'email' => 'admin@mail.ru',
+                'password' => 'admin',
             ]);
 
         $token = $this->postJson(route('login'), [
@@ -235,12 +234,12 @@ class OrderTest extends TestCase
             'name' => 'Пепперони',
             'description' => 'Классическая пицца с пепперони',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
 
         $this->postJson(route('cart.add'), [
             'product_id' => $pizza->id,
-            'quantity' => 4
+            'quantity' => 4,
         ])->assertStatus(200);
 
 
@@ -250,7 +249,7 @@ class OrderTest extends TestCase
             'email' => 'test3@mail.ru',
             'phone' => '+7 (888) 456-78-91',
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
-            'delivery_time' => '2025-05-05 21:00:00'
+            'delivery_time' => '2025-05-05 21:00:00',
         ]);
 
         $response->assertStatus(403)->assertJsonStructure(['message'])
@@ -265,7 +264,7 @@ class OrderTest extends TestCase
         $product = Product::factory()->create([
             'name' => 'Пепперони',
             'price' => 550.00,
-            'category_id' => $category->id
+            'category_id' => $category->id,
         ]);
 
         Status::factory()->create(['id' => 1, 'name' => 'В работе']);
@@ -276,8 +275,8 @@ class OrderTest extends TestCase
         ]);
 
         $user = User::factory()->create([
-            'email'=> 'test@mail.ru',
-            'password' => 'password'
+            'email' => 'test@mail.ru',
+            'password' => 'password',
         ]);
 
         $order = Order::create([
@@ -287,7 +286,7 @@ class OrderTest extends TestCase
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
             'delivery_time' => '2025-05-05 21:00:00',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         $orderItems = OrderItem::create([
@@ -316,9 +315,9 @@ class OrderTest extends TestCase
                     'status',
                     'delivery_address',
                     'delivery_time',
-                    'user'
-                ]
-            ]
+                    'user',
+                ],
+            ],
         ])->assertJson([
             'message' => 'Заказы пользователей',
             'total_orders' => 1,
@@ -330,9 +329,9 @@ class OrderTest extends TestCase
                     'user' => [
                         'name' => $user->name,
                         'email' => 'test@mail.ru',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -344,7 +343,7 @@ class OrderTest extends TestCase
         $product = Product::factory()->create([
             'name' => 'Пепперони',
             'price' => 550.00,
-            'category_id' => $category->id
+            'category_id' => $category->id,
         ]);
 
         Status::factory()->create(['id' => 1, 'name' => 'В работе']);
@@ -356,8 +355,8 @@ class OrderTest extends TestCase
         ]);
 
         $user = User::factory()->create([
-            'email'=> 'test@mail.ru',
-            'password' => 'password'
+            'email' => 'test@mail.ru',
+            'password' => 'password',
         ]);
 
         $order = Order::create([
@@ -367,7 +366,7 @@ class OrderTest extends TestCase
             'delivery_address' => 'город Москва, Ленина, 1, кв.1',
             'delivery_time' => '2025-05-05 21:00:00',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         $orderItems = OrderItem::create([
@@ -396,8 +395,8 @@ class OrderTest extends TestCase
                 'status',
                 'delivery_address',
                 'delivery_time',
-                'user'
-            ]
+                'user',
+            ],
         ])->assertJson([
             'message' => 'Статус заказа изменен',
             'data' => [
@@ -407,8 +406,8 @@ class OrderTest extends TestCase
                 'user' => [
                     'name' => $user->name,
                     'email' => 'test@mail.ru',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 }

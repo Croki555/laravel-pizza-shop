@@ -28,8 +28,8 @@ class UpdateOrderStatusRequest extends FormRequest
         return [
             'status_id' => [
                 'required',
-                new StatusExistsValidation()
-            ]
+                new StatusExistsValidation(),
+            ],
         ];
     }
 }

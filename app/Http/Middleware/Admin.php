@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Admin
 {
-
     public function handle(Request $request, Closure $next): Response
     {
         /** @var User $user */
@@ -19,7 +18,7 @@ class Admin
 
         if (!$user->is_admin) {
             return response()->json([
-                'message' => 'Доступ запрещён: требуются права администратора'
+                'message' => 'Доступ запрещён: требуются права администратора',
             ], 403);
         }
 

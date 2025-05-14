@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Models\Category;
 use App\Models\User;
 use App\Rules\CategoryExistsValidation;
-use App\Rules\StrictIntegerValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -33,7 +31,7 @@ class UpdateProductRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'category_id' => [
                 'nullable',
-                new CategoryExistsValidation()
+                new CategoryExistsValidation(),
             ],
         ];
     }

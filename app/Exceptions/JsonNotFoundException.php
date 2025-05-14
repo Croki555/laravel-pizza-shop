@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions;
 
 use Exception;
@@ -17,8 +19,8 @@ class JsonNotFoundException extends Exception
         return response()->json([
             'message' => $this->message,
             'errors' => [
-                'id' => ['Запрашиваемый ресурс не существует']
-            ]
+                'id' => ['Запрашиваемый ресурс не существует'],
+            ],
         ], 404);
     }
 }

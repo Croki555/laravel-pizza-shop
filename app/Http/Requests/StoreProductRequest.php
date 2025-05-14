@@ -33,7 +33,7 @@ class StoreProductRequest extends FormRequest
             'category_id' => [
                 'prohibits:category',
                 'required_without:category',
-                new CategoryExistsValidation()
+                new CategoryExistsValidation(),
             ],
             'category' => [
                 'prohibits:category_id',
@@ -53,8 +53,8 @@ class StoreProductRequest extends FormRequest
                             $existingCategory->name,
                         ));
                     }
-                }
-            ]
+                },
+            ],
         ];
     }
 }

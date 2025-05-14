@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
@@ -35,7 +37,7 @@ class CartTest extends TestCase
             'name' => 'Пепперони',
             'description' => 'Классическая пицца с пепперони',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
     }
 
@@ -45,7 +47,7 @@ class CartTest extends TestCase
             'name' => 'Фанта',
             'description' => 'Апельсиновый газированный напиток',
             'category_id' => $category->id,
-            'price' => 550.00
+            'price' => 550.00,
         ]);
     }
 
@@ -53,7 +55,7 @@ class CartTest extends TestCase
     {
         return $this->postJson(route('cart.add'), [
             'product_id' => $productId,
-            'quantity' => $quantity
+            'quantity' => $quantity,
         ]);
     }
 
@@ -68,16 +70,16 @@ class CartTest extends TestCase
                 'data' => [
                     'total_items',
                     'total_price',
-                    'cart_items'
-                ]
+                    'cart_items',
+                ],
             ])
             ->assertJson([
                 'message' => 'Ваша корзина',
                 'data' => [
                     'total_items' => 0,
                     'total_price' => 0,
-                    'cart_items' => []
-                ]
+                    'cart_items' => [],
+                ],
             ]);
     }
 
@@ -103,10 +105,10 @@ class CartTest extends TestCase
                             'quantity',
                             'name',
                             'price',
-                            'category'
-                        ]
-                    ]
-                ]
+                            'category',
+                        ],
+                    ],
+                ],
             ])
             ->assertJson([
                 "message" => "Ваша корзина",
@@ -119,10 +121,10 @@ class CartTest extends TestCase
                             'quantity' => 2,
                             'name' => 'Пепперони',
                             'price' => 550.00,
-                            "category" => "Пицца"
-                        ]
-                    ]
-                ]
+                            "category" => "Пицца",
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -146,10 +148,10 @@ class CartTest extends TestCase
                             'quantity',
                             'name',
                             'price',
-                            'category'
-                        ]
-                    ]
-                ]
+                            'category',
+                        ],
+                    ],
+                ],
             ])
             ->assertJson([
                 "message" => "Товар успешно добавлен в корзину",
@@ -162,10 +164,10 @@ class CartTest extends TestCase
                             'quantity' => 2,
                             'name' => 'Пепперони',
                             'price' => 550.00,
-                            "category" => "Пицца"
-                        ]
-                    ]
-                ]
+                            "category" => "Пицца",
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -183,7 +185,7 @@ class CartTest extends TestCase
                 'message' => 'Значение поля product id не существует.',
                 'errors' => [
                     'product_id' => ['Значение поля product id не существует.'],
-                ]
+                ],
             ]);
     }
 
@@ -197,7 +199,7 @@ class CartTest extends TestCase
 
         $response = $this->postJson(route('cart.add'), [
             'product_id' => $pepperoni->id,
-            'quantity' => 11
+            'quantity' => 11,
         ]);
 
 
@@ -207,9 +209,9 @@ class CartTest extends TestCase
                 'message' => 'Максимум 10 пицц. Текущее количество: 0',
                 'errors' => [
                     'product_id' => [
-                        'Максимум 10 пицц. Текущее количество: 0'
-                    ]
-                ]
+                        'Максимум 10 пицц. Текущее количество: 0',
+                    ],
+                ],
             ]);
     }
 
@@ -224,7 +226,7 @@ class CartTest extends TestCase
 
         $response = $this->postJson(route('cart.add'), [
             'product_id' => $fanta->id,
-            'quantity' => 21
+            'quantity' => 21,
         ]);
 
 
@@ -234,9 +236,9 @@ class CartTest extends TestCase
                 'message' => 'Максимум 20 напитков. Текущее количество: 0',
                 'errors' => [
                     'product_id' => [
-                        'Максимум 20 напитков. Текущее количество: 0'
-                    ]
-                ]
+                        'Максимум 20 напитков. Текущее количество: 0',
+                    ],
+                ],
             ]);
     }
 
@@ -250,7 +252,7 @@ class CartTest extends TestCase
 
         $response = $this->deleteJson(route('cart.remove'), [
             'product_id' => $pepperoni->id,
-            'quantity' => 2
+            'quantity' => 2,
         ]);
 
         $response->assertStatus(200)
@@ -265,10 +267,10 @@ class CartTest extends TestCase
                             'quantity',
                             'name',
                             'price',
-                            'category'
-                        ]
-                    ]
-                ]
+                            'category',
+                        ],
+                    ],
+                ],
             ])
             ->assertJson([
                 "message" => "Количество товара уменьшено",
@@ -281,10 +283,10 @@ class CartTest extends TestCase
                             'quantity' => 2,
                             'name' => 'Пепперони',
                             'price' => 550.00,
-                            "category" => "Пицца"
-                        ]
-                    ]
-                ]
+                            "category" => "Пицца",
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -309,16 +311,16 @@ class CartTest extends TestCase
                 'data' => [
                     'total_items',
                     'total_price',
-                    'cart_items'
-                ]
+                    'cart_items',
+                ],
             ])
             ->assertJson([
                 "message" => "Корзина успешно очищена",
                 'data' => [
                     'total_items' => 0,
                     'total_price' => 0,
-                    'cart_items' => []
-                ]
+                    'cart_items' => [],
+                ],
             ]);
     }
 }

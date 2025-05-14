@@ -12,7 +12,8 @@ class ProductController extends Controller
 {
     public function __construct(
         private readonly ProductServiceInterface $productService
-    ) {}
+    ) {
+    }
 
     public function index(): JsonResponse
     {
@@ -20,7 +21,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => "Продукты",
-            'data' => ProductResource::collection($products)
+            'data' => ProductResource::collection($products),
         ]);
     }
 
@@ -30,7 +31,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => "Продукт по ID - ${id}",
-            'data' => new ProductResource($product)
+            'data' => new ProductResource($product),
         ]);
     }
 }

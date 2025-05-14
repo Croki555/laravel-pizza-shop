@@ -9,7 +9,6 @@ use App\Models\OrderItem;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -50,14 +49,14 @@ class OrderRepository implements OrderRepositoryInterface
                 'phone' => $orderData['phone'],
                 'email' => $orderData['email'],
                 'delivery_address' => $orderData['delivery_address'],
-                'delivery_time' => $orderData['delivery_time']
+                'delivery_time' => $orderData['delivery_time'],
             ]);
 
             foreach ($items as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity']
+                    'quantity' => $item['quantity'],
                 ]);
             }
 

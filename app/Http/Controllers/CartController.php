@@ -9,19 +9,19 @@ use App\Http\Requests\StoreCartRequest;
 use App\Services\Cart\CartManager;
 use Illuminate\Http\JsonResponse;
 
-
 class CartController extends Controller
 {
     public function __construct(
         private readonly CartManager $cartManager
-    ) {}
+    ) {
+    }
 
 
     public function index(): JsonResponse
     {
         return response()->json([
             'message' => 'Ваша корзина',
-            'data' => $this->cartManager->getFormattedCart()
+            'data' => $this->cartManager->getFormattedCart(),
         ]);
     }
 
@@ -36,7 +36,7 @@ class CartController extends Controller
 
         return response()->json([
             'message' => 'Товар успешно добавлен в корзину',
-            'data' => $this->cartManager->getFormattedCart()
+            'data' => $this->cartManager->getFormattedCart(),
         ]);
     }
 
@@ -46,11 +46,12 @@ class CartController extends Controller
 
         $this->cartManager->decreaseQuantity(
             $validated['product_id'],
-            $validated['quantity']);
+            $validated['quantity']
+        );
 
         return response()->json([
             'message' => 'Количество товара уменьшено',
-            'data' => $this->cartManager->getFormattedCart()
+            'data' => $this->cartManager->getFormattedCart(),
         ]);
     }
 
@@ -60,7 +61,7 @@ class CartController extends Controller
 
         return response()->json([
             'message' => 'Корзина успешно очищена',
-            'data' => $this->cartManager->getFormattedCart()
+            'data' => $this->cartManager->getFormattedCart(),
         ]);
     }
 

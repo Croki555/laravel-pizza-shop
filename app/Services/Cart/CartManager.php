@@ -9,7 +9,8 @@ class CartManager
     public function __construct(
         private readonly CartServiceInterface $service,
         private readonly CartFormatterInterface $formatter,
-    ) {}
+    ) {
+    }
 
     public function addItem(int $productId, int $quantity): void
     {

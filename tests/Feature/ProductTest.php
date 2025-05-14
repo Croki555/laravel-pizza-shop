@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -133,16 +133,16 @@ class ProductTest extends TestCase
             ->assertJsonStructure([
                 'message',
                 'errors' => [
-                    'id' => []
-                ]
+                    'id' => [],
+                ],
             ])
             ->assertJson([
                 'message' => 'Продукт не найден',
                 'errors' => [
                     'id' => [
-                        'Запрашиваемый ресурс не существует'
-                    ]
-                ]
+                        'Запрашиваемый ресурс не существует',
+                    ],
+                ],
             ]);
     }
 
@@ -154,12 +154,12 @@ class ProductTest extends TestCase
             ->create([
                 'name' => 'Admin',
                 'email' => 'admin@mail.ru',
-                'password' => 'admin'
+                'password' => 'admin',
             ]);
 
         $loginResponse = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $loginResponse->json('token');
@@ -181,8 +181,8 @@ class ProductTest extends TestCase
                 'name',
                 'description',
                 'price',
-                'category'
-            ]
+                'category',
+            ],
         ])
             ->assertJson([
                 "message" => "Продукт успешно создан",
@@ -190,8 +190,8 @@ class ProductTest extends TestCase
                     'name' => 'Пепперони',
                     'description' => 'Классическая пицца с острой колбаской пепперони и сыром моцарелла',
                     'price' => 550.35,
-                    'category' => 'Пицца'
-                ]
+                    'category' => 'Пицца',
+                ],
             ]);
     }
 
@@ -206,12 +206,12 @@ class ProductTest extends TestCase
             ->create([
                 'name' => 'Admin',
                 'email' => 'admin@mail.ru',
-                'password' => 'admin'
+                'password' => 'admin',
             ]);
 
         $loginResponse = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $loginResponse->json('token');
@@ -233,8 +233,8 @@ class ProductTest extends TestCase
                     'name',
                     'description',
                     'price',
-                    'category'
-                ]
+                    'category',
+                ],
             ])
             ->assertJson([
                 "message" => "Продукт успешно создан",
@@ -242,8 +242,8 @@ class ProductTest extends TestCase
                     'name' => 'Пепперони',
                     'description' => 'Классическая пицца с острой колбаской пепперони и сыром моцарелла',
                     'price' => 550.35,
-                    'category' => 'Пицца'
-                ]
+                    'category' => 'Пицца',
+                ],
             ]);
     }
 
@@ -255,12 +255,12 @@ class ProductTest extends TestCase
 
         $admin = User::factory()->admin()->create([
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ])->json('token');
 
 
@@ -278,16 +278,16 @@ class ProductTest extends TestCase
         ->assertJsonStructure([
             'message',
             'errors' => [
-                'category'
-            ]
+                'category',
+            ],
         ])
             ->assertJson([
                 'message' => 'Категория "Пицца" уже существует',
                 'errors' => [
                     'category' => [
-                        'Категория "Пицца" уже существует'
-                    ]
-                ]
+                        'Категория "Пицца" уже существует',
+                    ],
+                ],
             ]);
     }
 
@@ -303,12 +303,12 @@ class ProductTest extends TestCase
 
         $admin = User::factory()->admin()->create([
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ])->json('token');
 
 
@@ -320,12 +320,12 @@ class ProductTest extends TestCase
             'name' => 'Новый продукт',
             'price' => 100,
             'description' => 'Описание продукта',
-            'category_id' => $nonExistentId
+            'category_id' => $nonExistentId,
         ]);
 
 
         $availableCategories = Category::all()
-            ->map(fn($cat) => "#{$cat->id} - {$cat->name}")
+            ->map(fn ($cat) => "#{$cat->id} - {$cat->name}")
             ->implode(', ');
 
 
@@ -334,9 +334,9 @@ class ProductTest extends TestCase
                 'message' => "Категория с ID {$nonExistentId} не найдена. Доступные категории: {$availableCategories}",
                 'errors' => [
                     'category_id' => [
-                        "Категория с ID {$nonExistentId} не найдена. Доступные категории: {$availableCategories}"
-                    ]
-                ]
+                        "Категория с ID {$nonExistentId} не найдена. Доступные категории: {$availableCategories}",
+                    ],
+                ],
             ]);
 
     }
@@ -352,23 +352,23 @@ class ProductTest extends TestCase
             ->create([
                 'name' => 'Пепперони',
                 'description' => 'Классическая пицца',
-                'price' => 500.00
+                'price' => 500.00,
             ]);
 
         $admin = User::factory()->admin()->create([
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ])->json('token');
 
 
         $updateData = [
             'price' => 332,
-            'description' => 'клюквенное описание'
+            'description' => 'клюквенное описание',
         ];
 
 
@@ -383,8 +383,8 @@ class ProductTest extends TestCase
                     'name',
                     'description',
                     'price',
-                    'category'
-                ]
+                    'category',
+                ],
             ])
             ->assertJson([
                 'message' => 'Продукт успешно изменен',
@@ -392,14 +392,14 @@ class ProductTest extends TestCase
                     'name' => 'Пепперони',
                     'description' => 'клюквенное описание',
                     'price' => 332,
-                    'category' => 'Пицца'
-                ]
+                    'category' => 'Пицца',
+                ],
             ]);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'description' => 'клюквенное описание',
-            'price' => 332
+            'price' => 332,
         ]);
     }
 
@@ -414,17 +414,17 @@ class ProductTest extends TestCase
             ->create([
                 'name' => 'Пепперони',
                 'description' => 'Классическая пицца',
-                'price' => 500.00
+                'price' => 500.00,
             ]);
 
         $admin = User::factory()->admin()->create([
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ]);
 
         $token = $this->postJson(route('login'), [
             'email' => 'admin@mail.ru',
-            'password' => 'admin'
+            'password' => 'admin',
         ])->json('token');
 
 

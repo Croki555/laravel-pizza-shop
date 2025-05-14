@@ -27,9 +27,10 @@ class OrderResource extends JsonResource
             'email' => $this->email,
             'delivery_address' => $this->delivery_address,
             'delivery_time' => $this->delivery_time->format('Y-m-d H:i'),
-            'items' => $this->whenLoaded('itemsWithProducts',
+            'items' => $this->whenLoaded(
+                'itemsWithProducts',
                 fn () => OrderItemResource::collection($this->itemsWithProducts)->toArray($request)
-            )
+            ),
         ];
     }
 }
