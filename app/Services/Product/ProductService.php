@@ -9,9 +9,14 @@ use App\Models\Product;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\Category\CategoryServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ProductService implements ProductServiceInterface
 {
+    private const CACHE_TTL_SECONDS = 86400; // 1 день
+    private const PRODUCTS_ALL_CACHE_KEY = 'products:all';
+    private const PRODUCT_CACHE_KEY_PREFIX = 'product:';
+
     public function __construct(
         private readonly ProductRepositoryInterface $productRepository,
         private readonly CategoryServiceInterface $categoryService,
@@ -24,7 +29,9 @@ class ProductService implements ProductServiceInterface
      */
     public function getProducts(): Collection
     {
-        return $this->productRepository->getAllWithCategories();
+        return Cache::remember(self::PRODUCTS_ALL_CACHE_KEY, self::CACHE_TTL_SECONDS, function () {
+            return $this->productRepository->getAllWithCategories();
+        });
     }
 
     /**
@@ -34,9 +41,14 @@ class ProductService implements ProductServiceInterface
      */
     public function getProductById(int $id): Product
     {
-        $product = $this->productRepository->findByIdWithCategory($id);
+        $cacheKey = self::PRODUCT_CACHE_KEY_PREFIX . $id;
+
+        $product = Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($id) {
+            return $this->productRepository->findByIdWithCategory($id);
+        });
 
         if (!$product) {
+            Cache::forget($cacheKey);
             throw new JsonNotFoundException('Продукт не найден');
         }
 

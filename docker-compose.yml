@@ -1,72 +1,124 @@
 services:
-    laravel.test:
-        build:
-            context: './vendor/laravel/sail/runtimes/8.4'
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: 'sail-8.4/app'
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
+    # Описание сервиса Nginx
+    nginx:
+        image: nginx:alpine
+
+        # Пробрасываем порт 80 из контейнера на порт ${APP_PORT} (если переменная не задана, то 80) на хосте
         ports:
-            - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            PHP_CS_FIXER_IGNORE_ENV: 1
+            - "${APP_PORT:-80}:80"
+
+        # Подключаем наш кастомный конфиг Nginx внутрь контейнера (заменяем стандартный).
         volumes:
-            - '.:/var/www/html'
-        networks:
-            - sail
+            - ./Docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+            - .:/var/www/html
+
+        restart: unless-stopped  # Автоперезапуск, пока не остановлен вручную
+
+        # Запускаем nginx только после запуска сервиса pizza.shop.
         depends_on:
-            - pgsql
-    pgsql:
-        image: 'postgres:17'
-        ports:
-            - '${FORWARD_DB_PORT:-5432}:5432'
+            - pizza.shop
+
+        # Подключение к сети (app-network)
+        networks:
+            - app-network
+
+    # Описание сервиса Laravel pizza shop
+    pizza.shop:
+        build:
+            context: . # Собираем образ из текущей директории.
+            dockerfile: ./Docker/Dockerfile # Указывает путь к Dockerfile
+
+            # Передаем переменную WWWGROUP в Dockerfile (обычно для настройки прав пользователя)
+            #args:
+                #WWWGROUP: '${WWWGROUP:-1000}'
+
+        # Монтируем текущую директорию в контейнер (для live-обновления кода без пересборки)
+        volumes:
+            - .:/var/www/html:z
+            - ./vendor:/var/www/html/vendor
+
+        restart: unless-stopped  # Автоперезапуск, пока не остановлен вручную
+
+        # Устанавливаем переменную окружения (обычно для настройки пользователя PHP-FPM)
         environment:
-            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            WWWUSER: '${WWWUSER:-1000}'
+
+        # Подключение к сети (app-network)
+        networks:
+            - app-network
+
+        # Запускаем этот сервис только после запуска pgsql и redis
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        # Проверяем, работу сервиса
+        healthcheck:
+            test: [ "CMD-SHELL", "php artisan inspire > /dev/null 2>&1" ]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+
+    # Описание сервиса PostgreSql
+    pgsql:
+        image: postgres:17
+        environment:
             POSTGRES_DB: '${DB_DATABASE}'
             POSTGRES_USER: '${DB_USERNAME}'
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        # Сохраняет данные pgsql в том postgres_data.
         volumes:
-            - 'sail-pgsql:/var/lib/postgresql/data'
-            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - pg_isready
-                - '-q'
-                - '-d'
-                - '${DB_DATABASE}'
-                - '-U'
-                - '${DB_USERNAME}'
-            retries: 3
-            timeout: 5s
-    redis: # ← новый сервис добавляется здесь
-        image: 'redis:alpine'
+            - postgres_data:/var/lib/postgresql/data
+
+        restart: unless-stopped  # Автоперезапуск, пока не остановлен вручную
+
+        # Пробрасываем порт 5432 контейнера на порт ${FORWARD_DB_PORT} (по умолчанию 5432) на хосте.
         ports:
-            - '${REDIS_PORT:-6379}:6379'
-        volumes:
-            - 'sailredis:/data'
+            - '${FORWARD_DB_PORT:-5432}:5432'
+
+        # Подключение к сети (app-network)
         networks:
-            - sail
+            - app-network
+
+        # Проверяет, готова ли БД принимать подключения
         healthcheck:
-            test: [ "CMD", "redis-cli", "ping" ]
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-laravel}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    # Описание сервиса Redis
+    redis:
+        image: redis:alpine
+
+        # Пробрасывает порт 6379 контейнера на порт ${REDIS_PORT} (по умолчанию 6379) на хосте.
+        ports:
+            - "${REDIS_PORT:-6379}:6379"
+
+        # Сохраняет данные Redis в том redis_data.
+        volumes:
+            - redis_data:/data
+
+        restart: unless-stopped  # Автоперезапуск, пока не остановлен вручную
+
+        # Подключение к сети (app-network)
+        networks:
+            - app-network
+
+        # Проверяет, готова ли БД принимать подключения
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
             interval: 1s
             timeout: 3s
             retries: 30
+
+# Создаем сеть app-network для связи между контейнерами.
 networks:
-    sail:
+    app-network:
         driver: bridge
+
+# Объявляет тома для хранения данных PostgreSQL и Redis (чтобы данные сохранялись после удаления контейнеров).
 volumes:
-    sail-pgsql:
-        driver: local
-    sailredis: # ← Этот том должен быть объявлен
-        driver: local
+    postgres_data:
+    redis_data:
