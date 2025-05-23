@@ -10,12 +10,13 @@ use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\Category\CategoryServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductService implements ProductServiceInterface
 {
     private const CACHE_TTL_SECONDS = 86400; // 1 день
-    private const PRODUCTS_ALL_CACHE_KEY = 'products:all';
-    private const PRODUCT_CACHE_KEY_PREFIX = 'product:';
+    public const PRODUCTS_ALL_CACHE_KEY = 'products:all';
+    public const PRODUCT_CACHE_KEY_PREFIX = 'product:';
 
     public function __construct(
         private readonly ProductRepositoryInterface $productRepository,
@@ -44,11 +45,22 @@ class ProductService implements ProductServiceInterface
         $cacheKey = self::PRODUCT_CACHE_KEY_PREFIX . $id;
 
         $product = Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($id) {
-            return $this->productRepository->findByIdWithCategory($id);
+            $product = $this->productRepository->findByIdWithCategory($id);
+
+            if (!$product) {
+                Log::error('Product not found in database', ['id' => $id]);
+                return null;
+            }
+
+            return $product;
         });
 
         if (!$product) {
-            Cache::forget($cacheKey);
+            Log::error('Product not found in cache or database', [
+                'id' => $id,
+                'cacheKey' => $cacheKey,
+                'cached' => Cache::get($cacheKey)
+            ]);
             throw new JsonNotFoundException('Продукт не найден');
         }
 

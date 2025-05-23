@@ -14,7 +14,6 @@ class ProductTest extends TestCase
 {
     use RefreshDatabase;
 
-
     /** @test */
     public function user_can_see_products()
     {

@@ -19,12 +19,17 @@
   docker compose exec pgsql psql -U sail -d postgres -c "\l"
 ```
 
-### #5. Запуск тестов
+### #5. Запуск воркер очереди Laravel (процесс, который обрабатывает jobs из очереди с именем "emails")
+```bash
+  docker-compose exec pizza.shop php artisan queue:work --queue=emails
+```
+
+### #6. Запуск тестов
 ```bash
   docker compose exec pizza.shop php artisan test
 ```
 
-### #5. Проверка через phpstan (8 уровень проверки)
+### #7. Проверка через phpstan (8 уровень проверки)
 ```bash
   docker compose exec pizza.shop ./vendor/bin/phpstan analyse
 ```

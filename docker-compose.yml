@@ -42,6 +42,9 @@ services:
         # Устанавливаем переменную окружения (обычно для настройки пользователя PHP-FPM)
         environment:
             WWWUSER: '${WWWUSER:-1000}'
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            CACHE_DRIVER: redis
 
         # Подключение к сети (app-network)
         networks:
@@ -98,7 +101,7 @@ services:
 
         # Сохраняет данные Redis в том redis_data.
         volumes:
-            - redis_data:/data
+            - redis_data:/data:z
 
         restart: unless-stopped  # Автоперезапуск, пока не остановлен вручную
 
@@ -113,12 +116,33 @@ services:
             timeout: 3s
             retries: 30
 
+    # Описание сервиса RabbitMQ
+    rabbitmq:
+        image: rabbitmq:4.1-management
+        container_name: rabbitmq
+        ports:
+            - "5672:5672"  # AMQP порт
+            - "15672:15672"  # Web интерфейс управления
+        environment:
+            RABBITMQ_DEFAULT_USER: '${RABBITMQ_USER:-sail}'
+            RABBITMQ_DEFAULT_PASS: '${RABBITMQ_PASSWORD:-password}'
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+        networks:
+            - app-network
+        healthcheck:
+            test: [ "CMD", "rabbitmqctl", "status" ]
+            interval: 5s
+            timeout: 10s
+            retries: 5
+        restart: unless-stopped
 # Создаем сеть app-network для связи между контейнерами.
 networks:
     app-network:
         driver: bridge
 
-# Объявляет тома для хранения данных PostgreSQL и Redis (чтобы данные сохранялись после удаления контейнеров).
+# Объявляет тома для хранения данных PostgreSQL, Redis, Rabbitmq (чтобы данные сохранялись после удаления контейнеров).
 volumes:
     postgres_data:
     redis_data:
+    rabbitmq_data:

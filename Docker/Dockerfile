@@ -26,6 +26,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     exif \
     pcntl \
     bcmath \
+    sockets \
     gd \
     zip
 
