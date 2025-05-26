@@ -1,0 +1,65 @@
+stages:
+  - build
+  - test
+
+variables:
+  APP_PORT: 80
+  DB_DATABASE: laravel
+  DB_USERNAME: sail
+  DB_PASSWORD: secret
+  REDIS_PORT: 6379
+  RABBITMQ_USER: sail
+  RABBITMQ_PASSWORD: password
+
+# Образ с Docker и Docker Compose (для запуска контейнеров)
+image: docker:24.0
+services:
+  - docker:dind
+
+before_script:
+  - apk add --no-cache py3-pip bash postgresql-client  # Утилиты для работы с PostgreSQL и Bash
+  - pip install docker-compose  # Устанавливаем Docker Compose
+
+build:
+  stage: build
+  script:
+    - echo "Собираем Docker-контейнеры..."
+    - docker-compose build
+    - echo "Build завершен."
+
+test:
+  stage: test
+  script:
+    - echo "Запускаем контейнеры в фоновом режиме..."
+    - docker-compose up -d
+
+    # Ожидаем готовности PostgreSQL
+    - echo "Ожидаем запуска PostgreSQL..."
+    - for i in {1..30}; do
+      docker-compose exec -T pgsql pg_isready -U $DB_USERNAME -d $DB_DATABASE && break;
+      sleep 2;
+      done
+
+    # Установка зависимостей Laravel
+    - echo "Устанавливаем зависимости Composer..."
+    - docker-compose exec -T pizza.shop composer install --no-interaction --prefer-dist
+
+    # Настройка окружения и миграции
+    - echo "Запускаем миграции и сидеры..."
+    - docker-compose exec -T pizza.shop php artisan migrate:fresh --seed --force
+
+    # Создание тестовой БД
+    - echo "Создаем тестовую БД..."
+    - docker-compose exec -T pgsql sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE DATABASE testing;"'
+
+    # Запуск тестов PHPUnit
+    - echo "Запускаем тесты Laravel..."
+    - docker-compose exec -T pizza.shop php artisan test
+
+    # Запуск PHPStan (уровень 8)
+    - echo "Проверяем код через PHPStan..."
+    - docker-compose exec -T pizza.shop ./vendor/bin/phpstan analyse --level=8
+
+  after_script:
+    - echo "Останавливаем контейнеры..."
+    - docker-compose down
