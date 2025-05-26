@@ -10,15 +10,14 @@ variables:
   REDIS_PORT: 6379
   RABBITMQ_USER: sail
   RABBITMQ_PASSWORD: password
+  WWWUSER: 1000
 
-# Образ с Docker и Docker Compose (для запуска контейнеров)
 image: docker:24.0
 services:
   - docker:dind
 
 before_script:
-  - apk add --no-cache py3-pip bash postgresql-client  # Утилиты для работы с PostgreSQL и Bash
-  - pip install docker-compose  # Устанавливаем Docker Compose
+  - apk add --no-cache bash postgresql-client docker-compose git
 
 build:
   stage: build
@@ -33,32 +32,39 @@ test:
     - echo "Запускаем контейнеры в фоновом режиме..."
     - docker-compose up -d
 
-    # Ожидаем готовности PostgreSQL
-    - echo "Ожидаем запуска PostgreSQL..."
-    - for i in {1..30}; do
-      docker-compose exec -T pgsql pg_isready -U $DB_USERNAME -d $DB_DATABASE && break;
-      sleep 2;
-      done
+    # Даем время контейнерам инициализироваться
+    - sleep 20
 
-    # Установка зависимостей Laravel
+    # Исправляем права доступа внутри контейнера (от имени root)
+    - docker-compose exec -T --user root pizza.shop chown -R www:www /var/www/html
+
+    # Добавляем доверие к репозиторию git, чтобы избежать ошибок ownership
+    - docker-compose exec -T --user www pizza.shop git config --global --add safe.directory /var/www/html
+
+    # Установка зависимостей Composer (от имени пользователя www)
     - echo "Устанавливаем зависимости Composer..."
-    - docker-compose exec -T pizza.shop composer install --no-interaction --prefer-dist
+    - docker-compose exec -T --user www pizza.shop composer install --no-interaction --prefer-dist
 
-    # Настройка окружения и миграции
+    # Копируем файл окружения и генерируем ключ (от имени www)
+    - docker-compose exec -T --user www pizza.shop cp .env.example .env
+    - docker-compose exec -T --user www pizza.shop php artisan key:generate
+
+    # Миграции и сидеры (от имени www)
     - echo "Запускаем миграции и сидеры..."
-    - docker-compose exec -T pizza.shop php artisan migrate:fresh --seed --force
+    - docker-compose exec -T --user www pizza.shop php artisan migrate:fresh --seed --force
 
-    # Создание тестовой БД
+    # Создаем тестовую базу данных (от имени postgres внутри контейнера pgsql)
+    # Предполагается, что переменные окружения для PostgreSQL заданы правильно.
     - echo "Создаем тестовую БД..."
     - docker-compose exec -T pgsql sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE DATABASE testing;"'
 
-    # Запуск тестов PHPUnit
+    # Запуск тестов Laravel (от имени www)
     - echo "Запускаем тесты Laravel..."
-    - docker-compose exec -T pizza.shop php artisan test
+    - docker-compose exec -T --user www pizza.shop php artisan test
 
-    # Запуск PHPStan (уровень 8)
+    # Проверка кода через PHPStan (от имени www)
     - echo "Проверяем код через PHPStan..."
-    - docker-compose exec -T pizza.shop ./vendor/bin/phpstan analyse --level=8
+    - docker-compose exec -T --user www pizza.shop ./vendor/bin/phpstan analyse --level=8
 
   after_script:
     - echo "Останавливаем контейнеры..."

@@ -67,9 +67,9 @@ services:
     pgsql:
         image: postgres:17
         environment:
-            POSTGRES_DB: '${DB_DATABASE}'
-            POSTGRES_USER: '${DB_USERNAME}'
-            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE:-laravel}'
+            POSTGRES_USER: '${DB_USERNAME:-sail}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-password}'
         # Сохраняет данные pgsql в том postgres_data.
         volumes:
             - postgres_data:/var/lib/postgresql/data
